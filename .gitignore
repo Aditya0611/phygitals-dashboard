@@ -1,0 +1,89 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Build outputs
+.next/
+out/
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.production.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python virtual environment
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Scraped data files (keep only the main ones)
+marketplace_progress_*.json
+all_cards_progress.json
+debug_*.html
+test_*.py
+*_progress_*.json
+
+# Keep important data files
+!phygitals_marketplace_complete.json
+!filtered_marketplace_data.json
+!enhanced_psa_cards_with_certificates.json
+!dashboard_alt_xyz_data.json

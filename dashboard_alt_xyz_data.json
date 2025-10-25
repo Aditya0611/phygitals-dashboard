@@ -1,0 +1,413 @@
+{
+  "psa_certificates": {
+    "total_cards": 20,
+    "cards_with_certificates": 20,
+    "integration_ready": 20
+  },
+  "alt_xyz_integration": {
+    "status": "Ready",
+    "url_pattern": "https://alt.xyz/cert/{certificate_number}",
+    "sample_urls": [
+      {
+        "certificate_number": "99996951",
+        "card_name": "2024 POKEMON SCR EN-STELLAR CROWN #028 CINDERACE E",
+        "alt_xyz_url": "https://alt.xyz/cert/99996951"
+      },
+      {
+        "certificate_number": "107215666",
+        "card_name": "2022 POKEMON SWORD & SHIELD SILVER TEMPEST #189 FU",
+        "alt_xyz_url": "https://alt.xyz/cert/107215666"
+      },
+      {
+        "certificate_number": "97547427",
+        "card_name": "2000 POKEMON GYM HEROES 1ST ED #103 NO REMOVAL GYM",
+        "alt_xyz_url": "https://alt.xyz/cert/97547427"
+      },
+      {
+        "certificate_number": "112149615",
+        "card_name": "2024 POKEMON PAF EN-PALDEAN FATES ILLUSTRATION RAR",
+        "alt_xyz_url": "https://alt.xyz/cert/112149615"
+      },
+      {
+        "certificate_number": "119201765",
+        "card_name": "2023 POKEMON OBF EN-OBSIDIAN FLAMES SPECIAL ILLUST",
+        "alt_xyz_url": "https://alt.xyz/cert/119201765"
+      }
+    ],
+    "integration_steps": {
+      "step_1": "Extract PSA certificate numbers from card pages",
+      "step_2": "Generate Alt.xyz URLs using certificate numbers",
+      "step_3": "Implement Alt.xyz API calls for sales data",
+      "step_4": "Scrape Alt.xyz for top 5 recent sales",
+      "step_5": "Integrate sales data into dashboard"
+    }
+  },
+  "enhanced_psa_cards": [
+    {
+      "card_name": "2024 POKEMON SCR EN-STELLAR CROWN #028 CINDERACE EX PSA 9",
+      "psa_certificate_number": "99996951",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$12.89",
+      "fmv": "$12.42",
+      "listing_url": "https://www.phygitals.com/card/8suHTzC9LpS2QakvCjwhhD8EfiLf9vVNtnnuW5hiQXGi",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/99996951",
+        "https://alt.xyz/psa/99996951",
+        "https://alt.xyz/certificate/99996951",
+        "https://www.alt.xyz/cert/99996951",
+        "https://www.alt.xyz/psa/99996951"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/99996951",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2022 POKEMON SWORD & SHIELD SILVER TEMPEST #189 FULL ART/CANDICE PSA 8",
+      "psa_certificate_number": "107215666",
+      "grader": "PSA",
+      "grade": "8",
+      "current_price": "$12.24",
+      "fmv": "$13.07",
+      "listing_url": "https://www.phygitals.com/card/2022-pokemon-sword-shield-silv-wzmi0s",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/107215666",
+        "https://alt.xyz/psa/107215666",
+        "https://alt.xyz/certificate/107215666",
+        "https://www.alt.xyz/cert/107215666",
+        "https://www.alt.xyz/psa/107215666"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/107215666",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2000 POKEMON GYM HEROES 1ST ED #103 NO REMOVAL GYM PSA 8",
+      "psa_certificate_number": "97547427",
+      "grader": "PSA",
+      "grade": "8",
+      "current_price": "$14.00",
+      "fmv": "$12.96",
+      "listing_url": "https://www.phygitals.com/card/2000-pokemon-gym-heroes-1st-ed-0wivgn",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/97547427",
+        "https://alt.xyz/psa/97547427",
+        "https://alt.xyz/certificate/97547427",
+        "https://www.alt.xyz/cert/97547427",
+        "https://www.alt.xyz/psa/97547427"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/97547427",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2024 POKEMON PAF EN-PALDEAN FATES ILLUSTRATION RARE #224 WUGTRIO PSA 9",
+      "psa_certificate_number": "112149615",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$13.56",
+      "fmv": "$13.07",
+      "listing_url": "https://www.phygitals.com/card/AohArh8kcyaepqNT5LkUcGM3WU7yRPG8dR6LZ2yAZXZv",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/112149615",
+        "https://alt.xyz/psa/112149615",
+        "https://alt.xyz/certificate/112149615",
+        "https://www.alt.xyz/cert/112149615",
+        "https://www.alt.xyz/psa/112149615"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/112149615",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2023 POKEMON OBF EN-OBSIDIAN FLAMES SPECIAL ILLUSTRATION RARE #227 POPPY PSA 9",
+      "psa_certificate_number": "119201765",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$11.65",
+      "fmv": "$12.96",
+      "listing_url": "https://www.phygitals.com/card/2023-pokemon-obf-en-obsidian-fla-tcacff",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/119201765",
+        "https://alt.xyz/psa/119201765",
+        "https://alt.xyz/certificate/119201765",
+        "https://www.alt.xyz/cert/119201765",
+        "https://www.alt.xyz/psa/119201765"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/119201765",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2025 POKEMON SVP EN-SV BLACK STAR PROMO #172 SYLVEON PSA 9",
+      "psa_certificate_number": "104070371",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$13.35",
+      "fmv": "$12.96",
+      "listing_url": "https://www.phygitals.com/card/2025-pokemon-svp-en-sv-black-sta-s5lve9",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/104070371",
+        "https://alt.xyz/psa/104070371",
+        "https://alt.xyz/certificate/104070371",
+        "https://www.alt.xyz/cert/104070371",
+        "https://www.alt.xyz/psa/104070371"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/104070371",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2023 POKEMON MEW EN-151 #145 ZAPDOS EX PSA 8",
+      "psa_certificate_number": "109793868",
+      "grader": "PSA",
+      "grade": "8",
+      "current_price": "$14.27",
+      "fmv": "$12.80",
+      "listing_url": "https://www.phygitals.com/card/5aaNZ2Lfy833JoPkwf1jTr6o8p5YWrvkXf3RwtaSjiCm",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/109793868",
+        "https://alt.xyz/psa/109793868",
+        "https://alt.xyz/certificate/109793868",
+        "https://www.alt.xyz/cert/109793868",
+        "https://www.alt.xyz/psa/109793868"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/109793868",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2019 POKEMON SUN & MOON HIDDEN FATES #48 EEVEE-HOLO PSA 8",
+      "psa_certificate_number": "103353759",
+      "grader": "PSA",
+      "grade": "8",
+      "current_price": "$12.14",
+      "fmv": "$12.50",
+      "listing_url": "https://www.phygitals.com/card/G7NNAew2s2iw3W1Y1caAWvyTWMSdoXjkaUGauSPACfVR",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/103353759",
+        "https://alt.xyz/psa/103353759",
+        "https://alt.xyz/certificate/103353759",
+        "https://www.alt.xyz/cert/103353759",
+        "https://www.alt.xyz/psa/103353759"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/103353759",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2019 POKEMON SUN & MOON HIDDEN FATES #SV85 FULL ART/HIKER PSA 9",
+      "psa_certificate_number": "55881636",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$13.93",
+      "fmv": "$12.96",
+      "listing_url": "https://www.phygitals.com/card/4L7vz337u4Hi9M9wysnimAjLjfFsSpyLNTnTr4rpKJPj",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/55881636",
+        "https://alt.xyz/psa/55881636",
+        "https://alt.xyz/certificate/55881636",
+        "https://www.alt.xyz/cert/55881636",
+        "https://www.alt.xyz/psa/55881636"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/55881636",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2000 POKEMON ROCKET 1ST ED #78 GOOP GAS ATTACK PSA 7",
+      "psa_certificate_number": "98771505",
+      "grader": "PSA",
+      "grade": "7",
+      "current_price": "$12.97",
+      "fmv": "$14.00",
+      "listing_url": "https://www.phygitals.com/card/J69fofaBhzSoc6i815KitEmWMBuaiNedpQP51deb3Dhb",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/98771505",
+        "https://alt.xyz/psa/98771505",
+        "https://alt.xyz/certificate/98771505",
+        "https://www.alt.xyz/cert/98771505",
+        "https://www.alt.xyz/psa/98771505"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/98771505",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2004 POKEMON EX FIRE RED & LEAF GREEN #23 FARFETCH'D-REVERSE FOIL PSA 5",
+      "psa_certificate_number": "113694285",
+      "grader": "PSA",
+      "grade": "5",
+      "current_price": "$11.87",
+      "fmv": "$14.04",
+      "listing_url": "https://www.phygitals.com/card/2004-pokemon-ex-fire-red-leaf-f05n3h",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/113694285",
+        "https://alt.xyz/psa/113694285",
+        "https://alt.xyz/certificate/113694285",
+        "https://www.alt.xyz/cert/113694285",
+        "https://www.alt.xyz/psa/113694285"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/113694285",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2022 Pokemon Sword & Shield Silver Tempest Full Art Smeargle #TG10 PSA 9 MINT",
+      "psa_certificate_number": "121358530",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$13.86",
+      "fmv": "$14.04",
+      "listing_url": "https://www.phygitals.com/card/DNtPyatPAL2QTGw8vMfgJanBceztFMRhYx1Ymz1HgXLP",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/121358530",
+        "https://alt.xyz/psa/121358530",
+        "https://alt.xyz/certificate/121358530",
+        "https://www.alt.xyz/cert/121358530",
+        "https://www.alt.xyz/psa/121358530"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/121358530",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2023 POKEMON SVI EN-SCARLET & VIOLET ILLUSTRATION RARE #221 STARLY PSA 9",
+      "psa_certificate_number": "85958183",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$14.79",
+      "fmv": "$14.04",
+      "listing_url": "https://www.phygitals.com/card/2023-pokemon-svi-en-scarlet-vi-5sdd0v",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/85958183",
+        "https://alt.xyz/psa/85958183",
+        "https://alt.xyz/certificate/85958183",
+        "https://www.alt.xyz/cert/85958183",
+        "https://www.alt.xyz/psa/85958183"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/85958183",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2017 POKEMON SUN & MOON CRIMSON INVASION #84A REGIGIGAS-HOLO PSA 8",
+      "psa_certificate_number": "119683901",
+      "grader": "PSA",
+      "grade": "8",
+      "current_price": "$16.14",
+      "fmv": "$14.58",
+      "listing_url": "https://www.phygitals.com/card/HtqUhMPVuiHqRegXyT1ZBuJG6tRXfzxMSZWZ2mR54VSA",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/119683901",
+        "https://alt.xyz/psa/119683901",
+        "https://alt.xyz/certificate/119683901",
+        "https://www.alt.xyz/cert/119683901",
+        "https://www.alt.xyz/psa/119683901"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/119683901",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2024 Pokemon Mew En-151 5 Pack Mini Tin Squirtle #007 PSA 9 MINT",
+      "psa_certificate_number": "117986778",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$13.14",
+      "fmv": "$15.01",
+      "listing_url": "https://www.phygitals.com/card/2024-pokemon-mew-en-151-5-pack-m-97i82",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/117986778",
+        "https://alt.xyz/psa/117986778",
+        "https://alt.xyz/certificate/117986778",
+        "https://www.alt.xyz/cert/117986778",
+        "https://www.alt.xyz/psa/117986778"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/117986778",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2023 POKEMON JPN SV2A-POKEMON 151 REVERSE HOLO #134 VAPOREON PSA 9",
+      "psa_certificate_number": "102398448",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$13.28",
+      "fmv": "$14.36",
+      "listing_url": "https://www.phygitals.com/card/2023-pokemon-jpn-sv2a-pokemon-15-du6hwd",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/102398448",
+        "https://alt.xyz/psa/102398448",
+        "https://alt.xyz/certificate/102398448",
+        "https://www.alt.xyz/cert/102398448",
+        "https://www.alt.xyz/psa/102398448"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/102398448",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "1999 POKEMON BASE SET 1ST EDITION #98 FIRE ENERGY PSA 7",
+      "psa_certificate_number": "122228834",
+      "grader": "PSA",
+      "grade": "7",
+      "current_price": "$15.05",
+      "fmv": "$14.58",
+      "listing_url": "https://www.phygitals.com/card/1999-pokemon-base-set-1st-editio-ht43pc",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/122228834",
+        "https://alt.xyz/psa/122228834",
+        "https://alt.xyz/certificate/122228834",
+        "https://www.alt.xyz/cert/122228834",
+        "https://www.alt.xyz/psa/122228834"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/122228834",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2023 POKEMON OBF EN-OBSIDIAN FLAMES REVERSE HOLO #166 EEVEE PSA 9",
+      "psa_certificate_number": "103538814",
+      "grader": "PSA",
+      "grade": "9",
+      "current_price": "$14.69",
+      "fmv": "$14.69",
+      "listing_url": "https://www.phygitals.com/card/DPjynRezNt4FGNn6xuYdTixMFy3WGddXyURz6JgU46BK",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/103538814",
+        "https://alt.xyz/psa/103538814",
+        "https://alt.xyz/certificate/103538814",
+        "https://www.alt.xyz/cert/103538814",
+        "https://www.alt.xyz/psa/103538814"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/103538814",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2016 POKEMON XY EVOLUTIONS #4 METAPOD-REVERSE FOIL PSA 8",
+      "psa_certificate_number": "59111448",
+      "grader": "PSA",
+      "grade": "8",
+      "current_price": "$12.91",
+      "fmv": "$15.12",
+      "listing_url": "https://www.phygitals.com/card/4Yu6PaDEbKchP64YURQSD4d6iq81CCHA9JruHKBYWp44",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/59111448",
+        "https://alt.xyz/psa/59111448",
+        "https://alt.xyz/certificate/59111448",
+        "https://www.alt.xyz/cert/59111448",
+        "https://www.alt.xyz/psa/59111448"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/59111448",
+      "alt_xyz_integration_status": "Ready"
+    },
+    {
+      "card_name": "2016 POKEMON XY FATES COLLIDE #86 MINCCINO-REVERSE FOIL PSA 8",
+      "psa_certificate_number": "119108733",
+      "grader": "PSA",
+      "grade": "8",
+      "current_price": "$12.91",
+      "fmv": "$15.12",
+      "listing_url": "https://www.phygitals.com/card/A5jkUpmhnarXb46MwxkJsLGYKpeSRn5bny1RrYgqGG2R",
+      "alt_xyz_urls": [
+        "https://alt.xyz/cert/119108733",
+        "https://alt.xyz/psa/119108733",
+        "https://alt.xyz/certificate/119108733",
+        "https://www.alt.xyz/cert/119108733",
+        "https://www.alt.xyz/psa/119108733"
+      ],
+      "primary_alt_xyz_url": "https://alt.xyz/cert/119108733",
+      "alt_xyz_integration_status": "Ready"
+    }
+  ],
+  "top_5_sales_implementation": {
+    "description": "Implementation guide for top 5 sales from Alt.xyz",
+    "method_1": "Direct Alt.xyz API calls using certificate numbers",
+    "method_2": "Web scraping Alt.xyz pages for sales history",
+    "method_3": "Integration with Alt.xyz partner API if available"
+  }
+}
