@@ -129,7 +129,7 @@ export default function AdvancedFilters() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{filteredData.summary.deals_found}</div>
-            <p className="text-xs text-muted-foreground">FMV > Current Price</p>
+            <p className="text-xs text-muted-foreground">FMV &gt; Current Price</p>
           </CardContent>
         </Card>
         
@@ -139,7 +139,7 @@ export default function AdvancedFilters() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{filteredData.summary.high_value_cards}</div>
-            <p className="text-xs text-muted-foreground">Price & FMV > $250</p>
+            <p className="text-xs text-muted-foreground">Price &amp; FMV &gt; $250</p>
           </CardContent>
         </Card>
         
@@ -167,8 +167,8 @@ export default function AdvancedFilters() {
                 <SelectValue placeholder="Select filter type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="deals">Deals (FMV > Price)</SelectItem>
-                <SelectItem value="high_value">High Value (>$250)</SelectItem>
+                <SelectItem value="deals">Deals (FMV &gt; Price)</SelectItem>
+                <SelectItem value="high_value">High Value (&gt;$250)</SelectItem>
                 <SelectItem value="psa">PSA Cards</SelectItem>
               </SelectContent>
             </Select>
