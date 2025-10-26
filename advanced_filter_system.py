@@ -71,14 +71,14 @@ class PhygitalsFilterSystem:
         
         return sorted(deals, key=lambda x: x['potential_savings'], reverse=True)
     
-    def filter_high_value_cards(self, min_value: float = 250.0) -> List[Dict]:
-        """Filter cards where both price and FMV > specified value"""
+    def filter_high_value_cards(self, min_value: float = 25.0) -> List[Dict]:
+        """Filter cards where price OR FMV > specified value"""
         high_value = []
         for card in self.cards:
             current_price = self.parse_price(card.get('current_price', '0'))
             fmv = self.parse_price(card.get('fmv', '0'))
             
-            if current_price >= min_value and fmv >= min_value:
+            if current_price >= min_value or fmv >= min_value:
                 high_value.append(card)
         
         return sorted(high_value, key=lambda x: self.parse_price(x.get('fmv', '0')), reverse=True)
@@ -97,6 +97,34 @@ class PhygitalsFilterSystem:
                     break
         
         return filtered
+    
+    def filter_by_price_range(self, min_price: float = 0.0, max_price: float = None) -> List[Dict]:
+        """Filter cards by price range"""
+        filtered = []
+        for card in self.cards:
+            current_price = self.parse_price(card.get('current_price', '0'))
+            
+            if current_price >= min_price:
+                if max_price is None or current_price <= max_price:
+                    filtered.append(card)
+        
+        return sorted(filtered, key=lambda x: self.parse_price(x.get('current_price', '0')), reverse=True)
+    
+    def get_all_cards(self) -> List[Dict]:
+        """Get all cards sorted by price"""
+        return sorted(self.cards, key=lambda x: self.parse_price(x.get('current_price', '0')), reverse=True)
+    
+    def filter_by_fmv_range(self, min_fmv: float = 0.0, max_fmv: float = None) -> List[Dict]:
+        """Filter cards by FMV range"""
+        filtered = []
+        for card in self.cards:
+            fmv = self.parse_price(card.get('fmv', '0'))
+            
+            if fmv >= min_fmv:
+                if max_fmv is None or fmv <= max_fmv:
+                    filtered.append(card)
+        
+        return sorted(filtered, key=lambda x: self.parse_price(x.get('fmv', '0')), reverse=True)
     
     def get_psa_cards_with_certificates(self) -> List[Dict]:
         """Get all PSA graded cards with certificate information"""
@@ -206,8 +234,11 @@ class PhygitalsFilterSystem:
         
         # Apply all filters
         deals = self.filter_fmv_greater_than_price()
-        high_value = self.filter_high_value_cards(250.0)
+        high_value = self.filter_high_value_cards(25.0)
         psa_cards = self.get_psa_cards_with_certificates()
+        all_cards = self.get_all_cards()
+        price_range_10_plus = self.filter_by_price_range(10.0)
+        fmv_25_plus = self.filter_by_fmv_range(25.0)
         alt_xyz_info = self.investigate_alt_xyz_links()
         
         # Get top Pokemon names
@@ -224,10 +255,15 @@ class PhygitalsFilterSystem:
                 'deals_found': len(deals),
                 'high_value_cards': len(high_value),
                 'psa_cards': len(psa_cards),
+                'price_range_10_plus': len(price_range_10_plus),
+                'fmv_25_plus': len(fmv_25_plus),
                 'top_pokemon': top_pokemon
             },
             'deals': deals[:20],  # Top 20 deals
             'high_value_cards': high_value[:20],  # Top 20 high-value cards
+            'all_cards': all_cards[:20],  # Top 20 all cards
+            'price_range_10_plus': price_range_10_plus[:20],  # Top 20 cards $10+
+            'fmv_25_plus': fmv_25_plus[:20],  # Top 20 cards FMV $25+
             'psa_cards_with_certificates': psa_cards[:20],  # Top 20 PSA cards
             'alt_xyz_integration': alt_xyz_info,
             'pokemon_breakdown': dict(top_pokemon)

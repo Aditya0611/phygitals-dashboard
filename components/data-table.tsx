@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, MoreHorizontal, ExternalLink } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -156,16 +156,18 @@ export const columns: ColumnDef<CardData>[] = [
   {
     id: "actions",
     enableHiding: false,
+    header: "View Details",
     cell: ({ row }) => {
       const card = row.original
       return (
         <Button
-          variant="ghost"
-          className="h-8 w-8 p-0"
+          variant="outline"
+          size="sm"
           onClick={() => window.open(card.listing_url, '_blank')}
+          className="flex items-center gap-2"
         >
-          <span className="sr-only">Open card</span>
-          <MoreHorizontal className="h-4 w-4" />
+          <ExternalLink className="h-4 w-4" />
+          View Details
         </Button>
       )
     },

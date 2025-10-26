@@ -13,10 +13,15 @@ interface FilteredData {
     deals_found: number
     high_value_cards: number
     psa_cards: number
+    price_range_10_plus: number
+    fmv_25_plus: number
     top_pokemon: [string, number][]
   }
   deals: any[]
   high_value_cards: any[]
+  all_cards: any[]
+  price_range_10_plus: any[]
+  fmv_25_plus: any[]
   psa_cards_with_certificates: any[]
   alt_xyz_integration: any
   pokemon_breakdown: Record<string, number>
@@ -65,8 +70,17 @@ export default function AdvancedFilters() {
       case 'deals':
         cards = filteredData.deals
         break
+      case 'all_cards':
+        cards = filteredData.all_cards
+        break
       case 'high_value':
         cards = filteredData.high_value_cards
+        break
+      case 'price_range_10_plus':
+        cards = filteredData.price_range_10_plus
+        break
+      case 'fmv_25_plus':
+        cards = filteredData.fmv_25_plus
         break
       case 'psa':
         cards = filteredData.psa_cards_with_certificates
@@ -139,13 +153,33 @@ export default function AdvancedFilters() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{filteredData.summary.high_value_cards}</div>
-            <p className="text-xs text-muted-foreground">Price &amp; FMV &gt; $250</p>
+            <p className="text-xs text-muted-foreground">Price &amp; FMV &gt; $25</p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">PSA Cards</CardTitle>
+            <CardTitle className="text-sm font-medium">Price Range ($10+)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-600">{filteredData.summary.price_range_10_plus}</div>
+            <p className="text-xs text-muted-foreground">Cards $10 and above</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">FMV Starting Point</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-teal-600">{filteredData.summary.fmv_25_plus}</div>
+            <p className="text-xs text-muted-foreground">FMV $25 and above</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">PSA Cards (Preferred)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">{filteredData.summary.psa_cards}</div>
@@ -167,9 +201,12 @@ export default function AdvancedFilters() {
                 <SelectValue placeholder="Select filter type" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all_cards">All Cards</SelectItem>
                 <SelectItem value="deals">Deals (FMV &gt; Price)</SelectItem>
-                <SelectItem value="high_value">High Value (&gt;$250)</SelectItem>
-                <SelectItem value="psa">PSA Cards</SelectItem>
+                <SelectItem value="high_value">High Value (&gt;$25)</SelectItem>
+                <SelectItem value="price_range_10_plus">Price Range ($10+)</SelectItem>
+                <SelectItem value="fmv_25_plus">FMV Starting Point ($25+)</SelectItem>
+                <SelectItem value="psa">PSA Cards (Preferred)</SelectItem>
               </SelectContent>
             </Select>
             
@@ -235,22 +272,35 @@ export default function AdvancedFilters() {
                       </div>
                     )}
                     
-                    {selectedFilter === 'psa' && card.certificate_url && (
+                    {selectedFilter === 'psa' && card.psa_certificate_number && (
+                      <div className="mt-2 p-2 bg-blue-50 rounded">
+                        <div className="text-blue-700 font-medium text-sm">
+                          📋 PSA Certificate: {card.psa_certificate_number}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Always show listing URL for deals */}
+                    {selectedFilter === 'deals' && card.listing_url && (
                       <div className="mt-2">
                         <a 
-                          href={card.certificate_url} 
+                          href={card.listing_url} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:underline text-sm"
                         >
-                          View PSA Certificate →
+                          🔗 View Listing →
                         </a>
                       </div>
                     )}
                   </div>
                   
                   <div className="text-right">
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => window.open(card.listing_url, '_blank')}
+                    >
                       View Details
                     </Button>
                   </div>

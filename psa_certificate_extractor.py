@@ -97,13 +97,14 @@ class PSACertificateExtractor:
         """Process PSA cards to extract certificate numbers"""
         psa_cards = [card for card in self.cards if card.get('grader') == 'PSA']
         
-        print(f"Processing {min(len(psa_cards), max_cards)} PSA cards...")
+        print(f"Processing {len(psa_cards) if max_cards is None else min(len(psa_cards), max_cards)} PSA cards...")
         
         self.setup_driver()
         
         try:
-            for i, card in enumerate(psa_cards[:max_cards], 1):
-                print(f"\nProcessing PSA card {i}/{min(len(psa_cards), max_cards)}: {card.get('full_listing_name', '')[:50]}...")
+            cards_to_process = psa_cards if max_cards is None else psa_cards[:max_cards]
+            for i, card in enumerate(cards_to_process, 1):
+                print(f"\nProcessing PSA card {i}/{len(cards_to_process)}: {card.get('full_listing_name', '')[:50]}...")
                 
                 card_url = card.get('listing_url', '')
                 if not card_url:
@@ -180,7 +181,7 @@ def main():
         return
     
     # Process PSA cards (limit to 20 for testing)
-    extractor.process_psa_cards(max_cards=20)
+    extractor.process_psa_cards(max_cards=None)  # Process ALL PSA cards
     
     # Save results
     summary = extractor.save_results()
