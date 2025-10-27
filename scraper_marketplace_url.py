@@ -177,11 +177,47 @@ class URLMarketplaceScraper:
             if grade_match:
                 card['grade'] = grade_match.group(1)
             
-            prices = re.findall(r'\$[\d,]+\.?\d*', page_text)
-            if prices:
-                card['current_price'] = prices[0]
-                if len(prices) > 1:
-                    card['fmv'] = prices[1]
+            # Extract prices using context-aware approach
+            # Look for "Current price" or similar labels - improved regex
+            current_price_match = re.search(r'(?:current\s+)?price[:\s]*\$([\d,]+\.?\d*)', page_text, re.IGNORECASE)
+            if current_price_match:
+                card['current_price'] = '$' + current_price_match.group(1)
+            
+            # Look for FMV by ALT
+            fmv_patterns = [
+                r'fmv\s+by\s+alt[:\s]*\$([\d,]+\.?\d*)',
+                r'fmv\s+by\s+\.?\s*alt[:\s]*\$([\d,]+\.?\d*)',
+                r'\.alt[:\s]*\$([\d,]+\.?\d*)',
+                r'alt[:\s]*\$([\d,]+\.?\d*)',
+                r'fmv[:\s]*\$([\d,]+\.?\d*)',
+            ]
+            
+            fmv_found = False
+            for pattern in fmv_patterns:
+                fmv_match = re.search(pattern, page_text, re.IGNORECASE)
+                if fmv_match:
+                    card['fmv'] = '$' + fmv_match.group(1)
+                    fmv_found = True
+                    break
+            
+            # Fallback: if we didn't find FMV by label, use second price found
+            if not fmv_found:
+                prices = re.findall(r'\$([\d,]+\.?\d*)', page_text)
+                
+                if prices and len(prices) > 1:
+                    # Take the price that's different from current price as FMV
+                    current_price_val = card['current_price'].replace('$', '').replace(',', '') if card['current_price'] else ''
+                    for price in prices:
+                        if price != current_price_val:
+                            card['fmv'] = '$' + price
+                            fmv_found = True
+                            break
+                    
+                    # If still no FMV found, means all prices are the same as current price
+                    if not fmv_found:
+                        card['fmv'] = "N/A"
+                else:
+                    card['fmv'] = "N/A"
             
             card_num_match = re.search(r'#(\d+)', card['full_listing_name'])
             if card_num_match:
@@ -255,7 +291,7 @@ def main():
     """)
     
     # FULL SCRAPE: Get all 1,516 pages = 24,254 cards
-    print("\n🚀 FULL SCRAPE MODE: Getting ALL 1,516 pages (24,254 cards)")
+    print("\nFULL SCRAPE MODE: Getting ALL 1,516 pages (24,254 cards)")
     print("   Estimated time: 6-8 hours")
     print("   Progress auto-saves every 10 pages")
     print("   Press Ctrl+C anytime to stop safely")
