@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/data-table'
 import { StatsCards } from '@/components/stats-cards'
 import AdvancedFilters from '@/components/advanced-filters'
+import PSADealsFocus from '@/components/psa-deals-focus'
 // import PSAAltXYZIntegration from '@/components/psa-alt-xyz-integration'
 import { CardData } from '@/components/data-table'
 import { RefreshCw, Download, Calendar, Database } from 'lucide-react'
@@ -143,6 +144,9 @@ export default function Dashboard() {
 
       {/* Advanced Filters */}
       <AdvancedFilters />
+
+      {/* PSA Deals Focus */}
+      <PSADealsFocus />
 
       {/* PSA Certificate & Alt.xyz Integration */}
       {/* <PSAAltXYZIntegration /> */}
