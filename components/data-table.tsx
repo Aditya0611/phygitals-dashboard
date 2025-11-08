@@ -26,7 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { formatPrice } from "@/lib/utils"
+import { parsePriceValue, formatCurrency } from "@/lib/utils"
 
 export type CardData = {
   listing_url: string
@@ -92,6 +92,11 @@ export const columns: ColumnDef<CardData>[] = [
   },
   {
     accessorKey: "current_price",
+    sortingFn: (rowA, rowB) => {
+      const valueA = parsePriceValue(rowA.getValue("current_price"))
+      const valueB = parsePriceValue(rowB.getValue("current_price"))
+      return (valueA ?? Number.NEGATIVE_INFINITY) - (valueB ?? Number.NEGATIVE_INFINITY)
+    },
     header: ({ column }) => {
       return (
         <Button
@@ -104,12 +109,17 @@ export const columns: ColumnDef<CardData>[] = [
       )
     },
     cell: ({ row }) => {
-      const price = formatPrice(row.getValue("current_price"))
-      return <div className="font-medium">${price.toFixed(2)}</div>
+      const priceDisplay = formatCurrency(row.getValue("current_price"))
+      return <div className="font-medium">{priceDisplay}</div>
     },
   },
   {
     accessorKey: "fmv",
+    sortingFn: (rowA, rowB) => {
+      const valueA = parsePriceValue(rowA.getValue("fmv"))
+      const valueB = parsePriceValue(rowB.getValue("fmv"))
+      return (valueA ?? Number.NEGATIVE_INFINITY) - (valueB ?? Number.NEGATIVE_INFINITY)
+    },
     header: ({ column }) => {
       return (
         <Button
@@ -122,8 +132,8 @@ export const columns: ColumnDef<CardData>[] = [
       )
     },
     cell: ({ row }) => {
-      const fmv = formatPrice(row.getValue("fmv"))
-      return <div className="text-muted-foreground">${fmv.toFixed(2)}</div>
+      const fmvDisplay = formatCurrency(row.getValue("fmv"))
+      return <div className="text-muted-foreground">{fmvDisplay}</div>
     },
   },
   {

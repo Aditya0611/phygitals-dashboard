@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ExternalLink, FileText, DollarSign, TrendingUp } from 'lucide-react'
+import { formatCurrency } from '@/lib/utils'
 
 interface PSACard {
   card_name: string
@@ -207,7 +208,7 @@ export default function PSAAltXYZIntegration() {
                   </div>
                   <div>
                     <span className="text-muted-foreground">Price:</span>
-                    <span className="ml-2">{card.current_price}</span>
+                    <span className="ml-2">{formatCurrency(card.current_price)}</span>
                   </div>
                 </div>
 
@@ -305,11 +306,11 @@ export default function PSAAltXYZIntegration() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <span className="font-medium">Current Price:</span>
-                  <p className="text-sm">{selectedCard.current_price}</p>
+                  <p className="text-sm">{formatCurrency(selectedCard.current_price)}</p>
                 </div>
                 <div>
                   <span className="font-medium">FMV:</span>
-                  <p className="text-sm">{selectedCard.fmv}</p>
+                  <p className="text-sm">{formatCurrency(selectedCard.fmv)}</p>
                 </div>
               </div>
               

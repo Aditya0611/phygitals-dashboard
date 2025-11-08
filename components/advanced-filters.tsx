@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { formatCurrency } from '@/lib/utils'
 
 interface FilteredData {
-  summary: {
+  summary?: {
     total_cards: number
     deals_found: number
     high_value_cards: number
@@ -17,14 +18,14 @@ interface FilteredData {
     fmv_25_plus: number
     top_pokemon: [string, number][]
   }
-  deals: any[]
-  high_value_cards: any[]
-  all_cards: any[]
-  price_range_10_plus: any[]
-  fmv_25_plus: any[]
-  psa_cards_with_certificates: any[]
-  alt_xyz_integration: any
-  pokemon_breakdown: Record<string, number>
+  deals?: any[]
+  high_value_cards?: any[]
+  all_cards?: any[]
+  price_range_10_plus?: any[]
+  fmv_25_plus?: any[]
+  psa_cards_with_certificates?: any[]
+  alt_xyz_integration?: any
+  pokemon_breakdown?: Record<string, number>
 }
 
 export default function AdvancedFilters() {
@@ -52,38 +53,28 @@ export default function AdvancedFilters() {
     }
   }
 
-  const formatPrice = (price: string) => {
-    if (!price || price === 'N/A') return 'N/A'
-    return price
-  }
-
-  const parsePrice = (price: string) => {
-    if (!price || price === 'N/A') return 0
-    return parseFloat(price.replace(/[^\d.]/g, ''))
-  }
-
   const getFilteredCards = () => {
     if (!filteredData) return []
     
-    let cards = []
+    let cards: any[] = []
     switch (selectedFilter) {
       case 'deals':
-        cards = filteredData.deals
+        cards = filteredData.deals || []
         break
       case 'all_cards':
-        cards = filteredData.all_cards
+        cards = filteredData.all_cards || []
         break
       case 'high_value':
-        cards = filteredData.high_value_cards
+        cards = filteredData.high_value_cards || []
         break
       case 'price_range_10_plus':
-        cards = filteredData.price_range_10_plus
+        cards = filteredData.price_range_10_plus || []
         break
       case 'fmv_25_plus':
-        cards = filteredData.fmv_25_plus
+        cards = filteredData.fmv_25_plus || []
         break
       case 'psa':
-        cards = filteredData.psa_cards_with_certificates
+        cards = filteredData.psa_cards_with_certificates || []
         break
       default:
         cards = []
@@ -133,7 +124,7 @@ export default function AdvancedFilters() {
             <CardTitle className="text-sm font-medium">Total Cards</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{filteredData.summary.total_cards}</div>
+            <div className="text-2xl font-bold">{filteredData.summary?.total_cards || 0}</div>
           </CardContent>
         </Card>
         
@@ -142,7 +133,7 @@ export default function AdvancedFilters() {
             <CardTitle className="text-sm font-medium">Deals Found</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{filteredData.summary.deals_found}</div>
+            <div className="text-2xl font-bold text-green-600">{filteredData.summary?.deals_found || 0}</div>
             <p className="text-xs text-muted-foreground">FMV &gt; Current Price</p>
           </CardContent>
         </Card>
@@ -152,7 +143,7 @@ export default function AdvancedFilters() {
             <CardTitle className="text-sm font-medium">High Value</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{filteredData.summary.high_value_cards}</div>
+            <div className="text-2xl font-bold text-blue-600">{filteredData.summary?.high_value_cards || 0}</div>
             <p className="text-xs text-muted-foreground">Price &amp; FMV &gt; $25</p>
           </CardContent>
         </Card>
@@ -162,7 +153,7 @@ export default function AdvancedFilters() {
             <CardTitle className="text-sm font-medium">Price Range ($10+)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{filteredData.summary.price_range_10_plus}</div>
+            <div className="text-2xl font-bold text-orange-600">{filteredData.summary?.price_range_10_plus || 0}</div>
             <p className="text-xs text-muted-foreground">Cards $10 and above</p>
           </CardContent>
         </Card>
@@ -172,7 +163,7 @@ export default function AdvancedFilters() {
             <CardTitle className="text-sm font-medium">FMV Starting Point</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-teal-600">{filteredData.summary.fmv_25_plus}</div>
+            <div className="text-2xl font-bold text-teal-600">{filteredData.summary?.fmv_25_plus || 0}</div>
             <p className="text-xs text-muted-foreground">FMV $25 and above</p>
           </CardContent>
         </Card>
@@ -182,7 +173,7 @@ export default function AdvancedFilters() {
             <CardTitle className="text-sm font-medium">PSA Cards (Preferred)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{filteredData.summary.psa_cards}</div>
+            <div className="text-2xl font-bold text-purple-600">{filteredData.summary?.psa_cards || 0}</div>
             <p className="text-xs text-muted-foreground">With Certificates</p>
           </CardContent>
         </Card>
@@ -255,11 +246,11 @@ export default function AdvancedFilters() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Current Price:</span>
-                        <span className="ml-2 font-medium">{formatPrice(card.current_price)}</span>
+                        <span className="ml-2 font-medium">{formatCurrency(card.current_price)}</span>
                       </div>
                       <div>
                         <span className="text-muted-foreground">FMV:</span>
-                        <span className="ml-2 font-medium">{formatPrice(card.fmv)}</span>
+                        <span className="ml-2 font-medium">{formatCurrency(card.fmv)}</span>
                       </div>
                     </div>
                     
@@ -338,7 +329,7 @@ export default function AdvancedFilters() {
             <div>
               <h4 className="font-medium mb-2">FMV Data Sources:</h4>
               <p className="text-sm text-muted-foreground">
-                {filteredData.alt_xyz_integration.fmv_sources.length} cards have FMV data available
+                {filteredData?.alt_xyz_integration?.fmv_sources?.length || 0} cards have FMV data available
               </p>
             </div>
           </div>

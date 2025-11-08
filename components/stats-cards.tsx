@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CardData } from "@/components/data-table"
-import { formatPrice } from "@/lib/utils"
+import { parsePriceValue, formatCurrency } from "@/lib/utils"
 import { TrendingUp, DollarSign, Award, Package } from "lucide-react"
 
 interface StatsCardsProps {
@@ -12,8 +12,13 @@ interface StatsCardsProps {
 
 export function StatsCards({ data }: StatsCardsProps) {
   const totalCards = data.length
-  const totalValue = data.reduce((sum, card) => sum + formatPrice(card.current_price), 0)
-  const avgPrice = totalValue / totalCards || 0
+
+  const numericPrices = data
+    .map((card) => parsePriceValue(card.current_price))
+    .filter((value): value is number => value !== null)
+
+  const totalValue = numericPrices.reduce((sum, price) => sum + price, 0)
+  const avgPrice = numericPrices.length > 0 ? totalValue / numericPrices.length : 0
   
   const graders = data.reduce((acc, card) => {
     acc[card.grader] = (acc[card.grader] || 0) + 1
@@ -50,7 +55,7 @@ export function StatsCards({ data }: StatsCardsProps) {
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">${totalValue.toLocaleString()}</div>
+          <div className="text-2xl font-bold">{formatCurrency(totalValue, { fallback: '$0.00' })}</div>
           <p className="text-xs text-muted-foreground">
             Combined market value
           </p>
@@ -63,7 +68,7 @@ export function StatsCards({ data }: StatsCardsProps) {
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">${avgPrice.toFixed(2)}</div>
+          <div className="text-2xl font-bold">{formatCurrency(avgPrice, { fallback: '$0.00' })}</div>
           <p className="text-xs text-muted-foreground">
             Per card average
           </p>

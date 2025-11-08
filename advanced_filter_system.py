@@ -10,12 +10,14 @@ import requests
 from typing import List, Dict, Any, Optional
 from urllib.parse import urlparse, parse_qs
 import time
+import os
 
 class PhygitalsFilterSystem:
     def __init__(self, data_file: str = 'phygitals_marketplace_complete.json'):
         """Initialize the filtering system with marketplace data"""
         self.data_file = data_file
         self.cards = self.load_data()
+        self.cards = self.clean_listed_cards(self.cards)
         self.filtered_cards = []
         
     def load_data(self) -> List[Dict]:
@@ -29,10 +31,113 @@ class PhygitalsFilterSystem:
     
     def parse_price(self, price_str: str) -> float:
         """Parse price string to float value"""
-        if not price_str or price_str == "N/A":
+        if not price_str or str(price_str).strip() in {"", "N/A"}:
             return 0.0
         # Remove $ and convert to float
-        return float(re.sub(r'[^\d.]', '', str(price_str)))
+        cleaned = re.sub(r'[^\d.-]', '', str(price_str))
+        if cleaned in {"", "-", ".", "-.", "-0"}:
+            return 0.0
+        try:
+            return float(cleaned)
+        except ValueError:
+            return 0.0
+
+    def is_listed(self, card: Dict) -> bool:
+        """Return True only for actively listed cards with a positive price and valid link."""
+        has_url = bool(card.get('listing_url') or card.get('card_url') or card.get('url') or card.get('link'))
+        price_raw = str(card.get('current_price') or card.get('price') or '').strip()
+        price_txt = price_raw.lower()
+        price_val = self.parse_price(price_raw)
+        status_fields = [card.get('status'), card.get('listing_status'), card.get('availability'), card.get('state')]
+        status_joined = ' | '.join([str(s).lower() for s in status_fields if s])
+        boolean_flags = [card.get('listed'), card.get('is_listed'), card.get('available'), card.get('isAvailable')]
+        flagged_false = any(v is False for v in boolean_flags)
+        unlisted = (
+            'unlisted' in status_joined or 'not listed' in status_joined or 'delisted' in status_joined or
+            'inactive' in status_joined or 'unavailable' in status_joined or 'sold' in status_joined or
+            'out of stock' in status_joined or 'unlisted' in price_txt or 'not for sale' in price_txt or flagged_false
+        )
+        # Optional local URL blocklist
+        try:
+            block_path = os.path.join(os.getcwd(), 'unlisted_blocklist.json')
+            blocked = set()
+            if os.path.exists(block_path):
+                arr = json.load(open(block_path, 'r', encoding='utf-8'))
+                if isinstance(arr, list):
+                    blocked = set(str(x) for x in arr)
+            url = str(card.get('listing_url') or card.get('card_url') or card.get('url') or card.get('link') or '')
+            if url in blocked:
+                return False
+        except Exception:
+            pass
+        return has_url and price_val > 0 and not unlisted
+
+    def clean_listed_cards(self, cards: List[Dict]) -> List[Dict]:
+        """Filter input dataset to only include actively listed cards."""
+        return [c for c in cards if self.is_listed(c)]
+
+    def get_display_fmv(self, card: Dict) -> float:
+        """ALT-first FMV for filtering and UI.
+        Prefer any ALT field or existing FMV labeled as ALT; otherwise use card.fmv.
+        If no ALT exists in the dataset, attempt a quick HTML sniff of the listing
+        page to extract "FMV by ALT" and cache it on the card for next runs.
+        """
+        # Drop known bad FMVs
+        if str(card.get('fmv_source', '')).lower() == 'grade_multiplier':
+            return 0.0
+
+        # 1) Prefer cached/explicit ALT fields
+        fmv_raw = str(card.get('fmv', '') or '')
+        if '2023' in fmv_raw:  # malformed concatenation like "189.002023"
+            return 0.0
+
+        alt_candidates = [
+            card.get('alt_fmv'), card.get('alt_value'), card.get('alt_estimate'),
+            card.get('alt_price'), card.get('fmv_alt'), card.get('alt'),
+            # ephemeral cache from HTML sniff (set below)
+            card.get('_alt_fmv_cached')
+        ]
+        for v in alt_candidates:
+            val = self.parse_price(v or '')
+            if val > 0:
+                return val
+
+        # 2) If fmv_source mentions alt, trust fmv
+        if str(card.get('fmv_source', '')).lower().find('alt') != -1:
+            val = self.parse_price(card.get('fmv', '0'))
+            if val > 0:
+                return val
+
+        # 3) Try a lightweight HTML read of the listing to locate "FMV by ALT"
+        listing_url = str(card.get('listing_url') or card.get('card_url') or card.get('url') or card.get('link') or '')
+        if listing_url and not card.get('_alt_sniff_attempted'):
+            try:
+                resp = requests.get(listing_url, timeout=5, headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36'
+                })
+                if resp.ok:
+                    text = resp.text
+                    # Look for a section mentioning FMV and a $ amount nearby
+                    # Examples: "FMV by ALT", "FMV by \uALT", etc.
+                    snippet_idx = text.lower().find('fmv')
+                    if snippet_idx != -1:
+                        window = text[max(0, snippet_idx-200):snippet_idx+200]
+                        m = re.search(r"\$\s*([0-9]+(?:\.[0-9]{2})?)", window)
+                        if m:
+                            alt_val = m.group(1)
+                            val = self.parse_price(alt_val)
+                            if val > 0:
+                                # Cache onto card so subsequent calls are fast
+                                card['_alt_fmv_cached'] = f"${val:.2f}"
+                                card['_alt_sniff_attempted'] = True
+                                return val
+                card['_alt_sniff_attempted'] = True
+            except Exception:
+                # Network or parsing errors are non-fatal; just mark attempted
+                card['_alt_sniff_attempted'] = True
+
+        # 4) Fall back to provided FMV
+        return self.parse_price(card.get('fmv', '0'))
     
     def extract_pokemon_name(self, full_name: str) -> str:
         """Extract Pokemon name from full listing name"""
@@ -62,7 +167,7 @@ class PhygitalsFilterSystem:
         deals = []
         for card in self.cards:
             current_price = self.parse_price(card.get('current_price', '0'))
-            fmv = self.parse_price(card.get('fmv', '0'))
+            fmv = self.get_display_fmv(card)
             
             if fmv > current_price and current_price > 0:
                 card['potential_savings'] = fmv - current_price
@@ -76,7 +181,7 @@ class PhygitalsFilterSystem:
         high_value = []
         for card in self.cards:
             current_price = self.parse_price(card.get('current_price', '0'))
-            fmv = self.parse_price(card.get('fmv', '0'))
+            fmv = self.get_display_fmv(card)
             
             if current_price >= min_value or fmv >= min_value:
                 high_value.append(card)
@@ -119,6 +224,7 @@ class PhygitalsFilterSystem:
         filtered = []
         for card in self.cards:
             fmv = self.parse_price(card.get('fmv', '0'))
+            fmv = self.get_display_fmv(card)
             
             if fmv >= min_fmv:
                 if max_fmv is None or fmv <= max_fmv:
@@ -138,6 +244,106 @@ class PhygitalsFilterSystem:
                 psa_cards.append(card)
         
         return psa_cards
+    
+    def get_affordable_psa_deals(self, min_price: float = 10.0, max_price: float = 15.0) -> List[Dict]:
+        """
+        Get affordable PSA deals in the $10-$15 range where FMV > Current Price
+        Logic matches the dashboard screenshot: PSA cards only, price range $10-$15, FMV > Current Price
+        """
+        affordable_psa_deals = []
+        
+        for card in self.cards:
+            # Must be PSA graded
+            if card.get('grader', '').upper() != 'PSA':
+                continue
+                
+            current_price = self.parse_price(card.get('current_price', '0'))
+            fmv = self.get_display_fmv(card)
+            
+            # Check if current price is in range $10-$15
+            if min_price <= current_price <= max_price:
+                # Check if FMV > Current Price (deal condition)
+                if fmv > current_price and fmv > 0:
+                    # Calculate savings
+                    potential_savings = fmv - current_price
+                    savings_percentage = (potential_savings / fmv) * 100
+                    
+                    # Add deal information
+                    card['potential_savings'] = potential_savings
+                    card['savings_percentage'] = savings_percentage
+                    card['deal_type'] = 'Affordable PSA Deal'
+                    card['price_range'] = f'${min_price}-${max_price}'
+                    
+                    affordable_psa_deals.append(card)
+        
+        # Sort by savings percentage (highest first)
+        return sorted(affordable_psa_deals, key=lambda x: x['savings_percentage'], reverse=True)
+    
+    def get_psa_deals_by_price_range(self, price_ranges: List[tuple]) -> Dict[str, List[Dict]]:
+        """
+        Get PSA deals organized by different price ranges
+        price_ranges: List of tuples like [(10, 15), (15, 25), (25, 50)]
+        """
+        psa_deals_by_range = {}
+        
+        for min_price, max_price in price_ranges:
+            range_name = f"PSA Deals (${min_price}-${max_price})"
+            deals = self.get_affordable_psa_deals(min_price, max_price)
+            psa_deals_by_range[range_name] = deals
+        
+        return psa_deals_by_range
+    
+    def get_all_price_tier_deals(self) -> Dict[str, List[Dict]]:
+        """
+        Get deals organized by comprehensive price tiers:
+        $300+, $200-$300, $100-$200, $50-$100, $25-$50, $10-$25, Under $10
+        """
+        all_tier_deals = {}
+        
+        # Define price tiers
+        price_tiers = [
+            (300, float('inf'), "Premium Deals ($300+)"),
+            (200, 300, "High-Value Deals ($200-$300)"),
+            (100, 200, "Mid-Range Deals ($100-$200)"),
+            (50, 100, "Budget Deals ($50-$100)"),
+            (25, 50, "Affordable Deals ($25-$50)"),
+            (10, 25, "Budget-Friendly Deals ($10-$25)"),
+            (0, 10, "Entry-Level Deals (Under $10)")
+        ]
+        
+        for min_price, max_price, tier_name in price_tiers:
+            tier_deals = []
+            
+            for card in self.cards:
+                # Must be PSA graded
+                if card.get('grader', '').upper() != 'PSA':
+                    continue
+                    
+                current_price = self.parse_price(card.get('current_price', '0'))
+                fmv = self.get_display_fmv(card)
+                
+                # Check if current price is in this tier
+                if min_price <= current_price <= max_price:
+                    # Check if FMV > Current Price (deal condition)
+                    if fmv > current_price and fmv > 0:
+                        # Calculate savings
+                        potential_savings = fmv - current_price
+                        savings_percentage = (potential_savings / fmv) * 100
+                        
+                        # Add deal information
+                        deal_card = card.copy()
+                        deal_card['potential_savings'] = potential_savings
+                        deal_card['savings_percentage'] = savings_percentage
+                        deal_card['deal_type'] = tier_name
+                        deal_card['price_tier'] = f'${min_price}-${max_price}' if max_price != float('inf') else f'${min_price}+'
+                        
+                        tier_deals.append(deal_card)
+            
+            # Sort by savings percentage (highest first)
+            tier_deals.sort(key=lambda x: x['savings_percentage'], reverse=True)
+            all_tier_deals[tier_name] = tier_deals
+        
+        return all_tier_deals
     
     def investigate_alt_xyz_links(self, sample_size: int = 10) -> Dict[str, Any]:
         """Investigate how cards might link to Alt.xyz for FMV data"""
@@ -236,6 +442,9 @@ class PhygitalsFilterSystem:
         deals = self.filter_fmv_greater_than_price()
         high_value = self.filter_high_value_cards(25.0)
         psa_cards = self.get_psa_cards_with_certificates()
+        affordable_psa_deals = self.get_affordable_psa_deals(10.0, 15.0)  # $10-$15 range
+        psa_deals_by_range = self.get_psa_deals_by_price_range([(10, 15), (15, 25), (25, 50)])
+        all_price_tier_deals = self.get_all_price_tier_deals()  # All price tiers
         all_cards = self.get_all_cards()
         price_range_10_plus = self.filter_by_price_range(10.0)
         fmv_25_plus = self.filter_by_fmv_range(25.0)
@@ -249,18 +458,28 @@ class PhygitalsFilterSystem:
         
         top_pokemon = sorted(pokemon_counts.items(), key=lambda x: x[1], reverse=True)[:10]
         
+        # Calculate summary for all price tiers
+        price_tier_summary = {}
+        for tier_name, tier_deals in all_price_tier_deals.items():
+            price_tier_summary[tier_name] = len(tier_deals)
+        
         report = {
             'summary': {
                 'total_cards': len(self.cards),
                 'deals_found': len(deals),
                 'high_value_cards': len(high_value),
                 'psa_cards': len(psa_cards),
+                'affordable_psa_deals': len(affordable_psa_deals),
                 'price_range_10_plus': len(price_range_10_plus),
                 'fmv_25_plus': len(fmv_25_plus),
-                'top_pokemon': top_pokemon
+                'top_pokemon': top_pokemon,
+                'price_tier_summary': price_tier_summary
             },
             'deals': deals[:20],  # Top 20 deals
             'high_value_cards': high_value[:20],  # Top 20 high-value cards
+            'affordable_psa_deals': affordable_psa_deals[:20],  # Top 20 affordable PSA deals ($10-$15)
+            'psa_deals_by_range': psa_deals_by_range,  # PSA deals organized by price ranges
+            'all_price_tier_deals': all_price_tier_deals,  # All price tier deals
             'all_cards': all_cards[:20],  # Top 20 all cards
             'price_range_10_plus': price_range_10_plus[:20],  # Top 20 cards $10+
             'fmv_25_plus': fmv_25_plus[:20],  # Top 20 cards FMV $25+
@@ -305,6 +524,12 @@ def main():
     print(f"Deals Found (FMV > Price): {report['summary']['deals_found']}")
     print(f"High-Value Cards (>$250): {report['summary']['high_value_cards']}")
     print(f"PSA Cards with Certificates: {report['summary']['psa_cards']}")
+    print(f"Affordable PSA Deals ($10-$15): {report['summary']['affordable_psa_deals']}")
+    
+    print("\nPSA DEALS BY PRICE TIER")
+    print("=" * 40)
+    for tier_name, count in report['summary']['price_tier_summary'].items():
+        print(f"{tier_name}: {count} deals")
     
     print("\nTOP POKEMON BY FREQUENCY")
     print("=" * 30)
@@ -319,6 +544,17 @@ def main():
         print(f"{i}. {deal.get('full_listing_name', '')[:50]}...")
         print(f"   Savings: ${savings:.2f} ({percentage:.1f}%)")
         print(f"   FMV: {deal.get('fmv')} | Price: {deal.get('current_price')}")
+        print()
+    
+    print("\nAFFORDABLE PSA DEALS ($10-$15)")
+    print("=" * 35)
+    for i, deal in enumerate(report['affordable_psa_deals'][:5], 1):
+        savings = deal.get('potential_savings', 0)
+        percentage = deal.get('savings_percentage', 0)
+        grade = deal.get('grade', 'N/A')
+        print(f"{i}. {deal.get('pokemon_name', 'Unknown')} PSA {grade}")
+        print(f"   Price: {deal.get('current_price')} | FMV: {deal.get('fmv')}")
+        print(f"   Savings: ${savings:.2f} ({percentage:.1f}%)")
         print()
     
     print("Filtering complete! Check 'filtered_marketplace_data.json' for detailed results.")
