@@ -24,12 +24,18 @@ class URLMarketplaceScraper:
         """Setup Chrome"""
         print("Setting up Chrome...")
         chrome_options = Options()
-        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--headless=new')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--disable-gpu')
+        chrome_options.add_argument('--disable-software-rasterizer')
+        chrome_options.add_argument('--disable-extensions')
+        chrome_options.add_argument('--disable-setuid-sandbox')
         chrome_options.add_argument('--window-size=1920,1080')
         chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+        chrome_options.binary_location = '/usr/bin/chromium-browser'
         
+        print("Initializing Chrome driver...")
         self.driver = webdriver.Chrome(options=chrome_options)
         self.driver.implicitly_wait(10)
         print("Chrome ready!\n")

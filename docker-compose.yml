@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  pika-deals:
+    build: .
+    container_name: pika-deals-app
+    ports:
+      - "3002:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pika-deals.rule=Host(`deals.pikacapital.club`)"
+      - "traefik.http.routers.pika-deals.tls=true"
+      - "traefik.http.routers.pika-deals.tls.certresolver=letsencrypt"
+    networks:
+      - pika-network
+
+networks:
+  pika-network:
+    external: true
