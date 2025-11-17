@@ -171,7 +171,7 @@ export async function GET() {
           .find(v => Number.isFinite(v) && v > 0)
         const price = parseFloat(String(card?.current_price ?? card?.price ?? '').replace(/[$,]/g, ''))
         
-        if (Number.isFinite(alt) && alt > 0 && Number.isFinite(price) && price > 0) {
+        if (alt !== undefined && Number.isFinite(alt) && alt > 0 && Number.isFinite(price) && price > 0) {
           // Only use ALT if it looks reasonable
           if (!(alt > 500 || alt > price * 3)) {
             return { ...card, fmv: `$${alt.toFixed(2)}`, fmv_source: 'alt' }
@@ -200,7 +200,7 @@ export async function GET() {
           .find(v => Number.isFinite(v) && v > 0)
         const price = parseFloat(String(card?.current_price ?? card?.price ?? '').replace(/[$,]/g, ''))
         
-        if (Number.isFinite(alt) && alt > 0 && Number.isFinite(price) && price > 0) {
+        if (alt !== undefined && Number.isFinite(alt) && alt > 0 && Number.isFinite(price) && price > 0) {
           if (!(alt > 500 || alt > price * 3)) {
             return { ...card, fmv: `$${alt.toFixed(2)}`, fmv_source: 'alt' }
           }
@@ -225,7 +225,7 @@ export async function GET() {
       const price = parseFloat(String(card?.current_price ?? card?.price ?? '').replace(/[$,]/g, ''))
       
       // Prefer ALT if available and valid
-      if (Number.isFinite(alt) && alt > 0 && Number.isFinite(price) && price > 0) {
+      if (alt !== undefined && Number.isFinite(alt) && alt > 0 && Number.isFinite(price) && price > 0) {
         if (!(alt > 500 || alt > price * 3)) {
           return { ...card, fmv: `$${alt.toFixed(2)}`, fmv_source: 'alt' }
         }
