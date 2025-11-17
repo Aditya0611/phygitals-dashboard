@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { TrendingUp, DollarSign, Star, AlertTriangle, ExternalLink } from 'lucide-react'
+import { TrendingUp, DollarSign, Star, AlertTriangle, ExternalLink, RefreshCw } from 'lucide-react'
 import { formatCurrency, parsePriceValue } from '@/lib/utils'
 
 interface DealIntelligence {
@@ -50,19 +50,51 @@ interface DealIntelligence {
 export default function DealIntelligenceDashboard() {
   const [intelligence, setIntelligence] = useState<DealIntelligence | null>(null)
   const [loading, setLoading] = useState(true)
+  const [lastUpdated, setLastUpdated] = useState<string>('')
   // Tabs removed to avoid missing dependency; render sections directly
 
   useEffect(() => {
     fetchIntelligence()
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchIntelligence()
+    }, 30000)
+    return () => clearInterval(interval)
   }, [])
 
-  const fetchIntelligence = async () => {
+  const fetchIntelligence = async (force = false) => {
     setLoading(true)
     try {
-      const res = await fetch('/api/deal-intelligence')
+      // Add cache-busting timestamp to ensure fresh data
+      const timestamp = new Date().getTime()
+      const random = Math.random().toString(36).substring(7)
+      const url = `/api/deal-intelligence?t=${timestamp}&r=${random}${force ? '&force=1' : ''}`
+      
+      const res = await fetch(url, {
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        next: { revalidate: 0 }
+      })
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`)
+      }
+      
       const result = await res.json()
       if (result.success) {
+        console.log('Deal intelligence fetched:', {
+          lastUpdated: result.lastUpdated,
+          fileMtime: result.fileMtime,
+          crazyDeals: result.data?.summary?.crazy_deals,
+          excellentDeals: result.data?.summary?.excellent_deals
+        })
         setIntelligence(result.data)
+        setLastUpdated(result.lastUpdated || result.fileMtime || new Date().toISOString())
       } else {
         console.error('Failed to fetch deal intelligence:', result.error)
       }
@@ -126,6 +158,24 @@ export default function DealIntelligenceDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Header with refresh button */}
+      <div className="flex justify-between items-center border-b pb-4">
+        <div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+            🔥 Deal Intelligence Dashboard
+          </h2>
+          {lastUpdated && (
+            <p className="text-sm text-muted-foreground mt-1">
+              Last updated: {new Date(lastUpdated).toLocaleString()}
+            </p>
+          )}
+        </div>
+        <Button onClick={() => fetchIntelligence(true)} variant="outline" size="sm" disabled={loading}>
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          {loading ? 'Refreshing...' : 'Refresh'}
+        </Button>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
@@ -179,11 +229,14 @@ export default function DealIntelligenceDashboard() {
 
       {/* CRAZY DEALS */}
       <div className="w-full space-y-4">
-        <Card>
-            <CardHeader>
-              <CardTitle className="text-red-600">🚨 CRAZY DEALS - Don&rsquo;t Miss These!</CardTitle>
-              <CardDescription>
-                Highest scoring deals with massive upside potential
+        <Card className="border-2 border-red-500 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-red-50 to-red-100">
+              <CardTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
+                <span className="text-3xl">🚨</span>
+                CRAZY DEALS - Don&rsquo;t Miss These!
+              </CardTitle>
+              <CardDescription className="text-base font-medium">
+                Highest scoring deals with massive upside potential (All cards above $50)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -266,11 +319,14 @@ export default function DealIntelligenceDashboard() {
         </Card>
 
         {/* EXCELLENT DEALS */}
-        <Card>
-            <CardHeader>
-              <CardTitle className="text-orange-600">⭐ EXCELLENT DEALS - Strong Opportunities</CardTitle>
-              <CardDescription>
-                High-scoring deals with significant upside potential
+        <Card className="border-2 border-orange-500 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-orange-50 to-orange-100">
+              <CardTitle className="text-2xl font-bold text-orange-600 flex items-center gap-2">
+                <span className="text-3xl">⭐</span>
+                EXCELLENT DEALS - Strong Opportunities
+              </CardTitle>
+              <CardDescription className="text-base font-medium">
+                High-scoring deals with significant upside potential (All cards above $50)
               </CardDescription>
             </CardHeader>
             <CardContent>

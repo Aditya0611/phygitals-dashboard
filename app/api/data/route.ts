@@ -244,9 +244,11 @@ export async function GET() {
       dataSource: sourceType
     }, {
       headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
         'Pragma': 'no-cache',
-        'Expires': '0'
+        'Expires': '0',
+        'Last-Modified': latestFile.stats.mtime.toISOString(),
+        'ETag': `"${latestFile.stats.mtime.getTime()}"`
       }
     })
   } catch (error) {

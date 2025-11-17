@@ -18,10 +18,10 @@ interface PSADeal {
 }
 
 interface PSADealsData {
-  affordable_deals: PSADeal[]
-  premium_deals: PSADeal[]
-  all_psa_deals: PSADeal[]
-  summary: {
+  affordable_deals?: PSADeal[]
+  premium_deals?: PSADeal[]
+  all_psa_deals?: PSADeal[]
+  summary?: {
     total_psa_cards: number
     psa_deals_found: number
     affordable_count: number
@@ -57,7 +57,11 @@ export default function PSADealsFocus() {
 
   const getCurrentDeals = () => {
     if (!psaData) return []
-    return selectedRange === 'affordable' ? psaData.affordable_deals : psaData.premium_deals
+    if (selectedRange === 'affordable') {
+      return psaData.affordable_deals || []
+    } else {
+      return psaData.premium_deals || []
+    }
   }
 
   if (loading) {
@@ -102,7 +106,7 @@ export default function PSADealsFocus() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{psaData.summary.total_psa_cards}</div>
+            <div className="text-2xl font-bold">{psaData.summary?.total_psa_cards || 0}</div>
             <p className="text-xs text-muted-foreground">PSA graded cards</p>
           </CardContent>
         </Card>
@@ -113,7 +117,7 @@ export default function PSADealsFocus() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{psaData.summary.psa_deals_found}</div>
+            <div className="text-2xl font-bold text-green-600">{psaData.summary?.psa_deals_found || 0}</div>
             <p className="text-xs text-muted-foreground">FMV &gt; Price</p>
           </CardContent>
         </Card>
@@ -124,7 +128,7 @@ export default function PSADealsFocus() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{psaData.summary.affordable_count}</div>
+            <div className="text-2xl font-bold text-blue-600">{psaData.summary?.affordable_count || 0}</div>
             <p className="text-xs text-muted-foreground">$10-$15 range</p>
           </CardContent>
         </Card>
@@ -135,7 +139,7 @@ export default function PSADealsFocus() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">{psaData.summary.premium_count}</div>
+            <div className="text-2xl font-bold text-purple-600">{psaData.summary?.premium_count || 0}</div>
             <p className="text-xs text-muted-foreground">$100-$300 range</p>
           </CardContent>
         </Card>

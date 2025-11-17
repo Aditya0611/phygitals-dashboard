@@ -128,6 +128,23 @@ Each card record contains:
 
 ### Vercel (Recommended)
 
+## CI: GitHub Actions + External Data Source
+
+We include `.github/workflows/scrape-and-update.yml` to scrape on a schedule using a self-hosted runner, then publish JSON to a `data` branch.
+
+1) Register a self‑hosted runner (Windows or Ubuntu) for this repo.
+2) Optional: add `DEPLOY_HOOK_URL` secret to trigger a dashboard deploy (Vercel/Cloudflare Pages).
+3) The workflow will run the scraper, merge FMV (ALT‑first), purge unlisted, rebuild filters, and push:
+   - `phygitals_marketplace_complete.json`
+   - `filtered_marketplace_data.json`
+   - `deal_intelligence.json`
+
+If you host the dashboard, set `DATA_SOURCE_URL` so the API reads the JSON from the `data` branch (or a bucket):
+
+```
+DATA_SOURCE_URL=https://raw.githubusercontent.com/<org-or-user>/<repo>/data/filtered_marketplace_data.json
+```
+
 1. Connect your GitHub repository to Vercel
 2. Set environment variables if needed
 3. Deploy automatically on push

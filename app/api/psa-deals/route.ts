@@ -8,9 +8,22 @@ export async function GET() {
     const psaDealsFile = path.join(dataDir, 'psa_deals_analysis.json')
     
     if (!fs.existsSync(psaDealsFile)) {
-      return NextResponse.json({ 
-        error: 'PSA deals analysis not found. Please run the PSA analysis first.' 
-      }, { status: 404 })
+      // Return empty data structure instead of error
+      return NextResponse.json({
+        success: true,
+        data: {
+          affordable_deals: [],
+          premium_deals: [],
+          all_psa_deals: [],
+          summary: {
+            total_psa_cards: 0,
+            psa_deals_found: 0,
+            affordable_count: 0,
+            premium_count: 0
+          }
+        },
+        lastUpdated: new Date().toISOString()
+      })
     }
     
     const data = JSON.parse(fs.readFileSync(psaDealsFile, 'utf8'))
@@ -19,6 +32,12 @@ export async function GET() {
       success: true,
       data: data,
       lastUpdated: new Date().toISOString()
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     })
     
   } catch (error) {
