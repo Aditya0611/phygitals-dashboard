@@ -123,6 +123,7 @@ export async function GET() {
     } catch {}
 
     // Remove unlisted cards: require a valid listing URL and positive price
+    // Show ALL cards (including below $100) in dashboard
     const cleaned = (Array.isArray(data) ? data : []).filter((card: any) => {
       // Accept any known listing link field
       const hasUrl = Boolean(card?.listing_url || card?.card_url || card?.url || card?.link)
@@ -148,6 +149,7 @@ export async function GET() {
       ) || flaggedByBooleans || priceText.includes('unlisted') || priceText.includes('not for sale')
       const url = String(card?.listing_url || card?.card_url || card?.url || card?.link || '')
       if (blockedUrls.has(url)) return false
+      // Show all cards with valid price (including below $100)
       return hasUrl && !Number.isNaN(price) && price > 0 && !explicitlyUnlisted
     })
     // ALT-first FMV normalization for display

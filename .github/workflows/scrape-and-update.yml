@@ -1,0 +1,8 @@
+name: disabled
+
+# CI disabled: user requested to undo GitHub automation.
+on: {}
+
+jobs: {}
+
+

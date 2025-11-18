@@ -247,9 +247,14 @@ try:
                     except:
                         pass
             
+            # If FMV is still not found, mark it as N/A
+            if not new_fmv:
+                new_fmv = 'N/A'
+            
             # Update card in full_data
             price_changed = new_price != old_price
-            fmv_changed = new_fmv and new_fmv != old_fmv
+            # FMV changed if it's different from old value (including setting to N/A)
+            fmv_changed = new_fmv != old_fmv
             
             if price_changed or fmv_changed:
                 if price_changed:
@@ -258,7 +263,12 @@ try:
                 
                 if fmv_changed:
                     full_data[card_index]['fmv'] = new_fmv
-                    full_data[card_index]['fmv_source'] = 'alt'
+                    # Only set fmv_source to 'alt' if FMV was actually found (not N/A)
+                    if new_fmv != 'N/A':
+                        full_data[card_index]['fmv_source'] = 'alt'
+                    else:
+                        # Clear fmv_source when FMV is not available
+                        full_data[card_index]['fmv_source'] = ''
                     print(f"  FMV: {old_fmv} -> {new_fmv}")
                 
                 full_data[card_index]['last_updated'] = time.strftime('%Y-%m-%d %H:%M:%S')

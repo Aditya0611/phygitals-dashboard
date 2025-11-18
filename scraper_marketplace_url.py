@@ -228,6 +228,23 @@ class URLMarketplaceScraper:
                                 page_title = self.driver.title
                                 page_source_len = len(self.driver.page_source)
                                 print(f"    📊 Page loaded: URL={current_url[:60]}..., Title={page_title[:40]}..., HTML size={page_source_len:,} chars")
+                                
+                                # Check for server errors (500, 503, etc.)
+                                if '500' in page_title or 'internal server error' in page_title.lower() or 'error' in page_title.lower():
+                                    if page_source_len < 10000:  # Error pages are usually small
+                                        print(f"    ⚠️  Server error detected (500/503). Waiting 15 seconds before retry...")
+                                        time.sleep(15)  # Longer wait for server recovery
+                                        # Try refreshing the page
+                                        try:
+                                            self.driver.refresh()
+                                            time.sleep(8)  # Longer wait after refresh
+                                            page_title = self.driver.title
+                                            if '500' in page_title or 'internal server error' in page_title.lower():
+                                                print(f"    ⚠️  Server still returning error. Will skip this URL pattern.")
+                                                time.sleep(2)  # Brief pause before trying next URL
+                                                continue
+                                        except:
+                                            pass
                             except:
                                 pass
                             
@@ -282,9 +299,14 @@ class URLMarketplaceScraper:
                         break
                 
                 if not page_success:
-                    print("⚠️  Failed to load this page after all attempts. Skipping...")
+                    print("⚠️  Failed to load this page after all attempts.")
+                    print("    This might be a temporary server issue (500 error).")
+                    print("    💡 Skipping this page and continuing to next page...")
+                    print("    ℹ️  You can re-scrape failed pages later when server recovers")
                     # Save progress before skipping
                     self.save_progress(page_num)
+                    # Skip to next page immediately (don't waste time on retries)
+                    time.sleep(2)  # Brief pause before next page
                     continue
                 
                 # Track cards collected from this page (reset for each page)
@@ -296,13 +318,42 @@ class URLMarketplaceScraper:
                     
                     card_data = self.scrape_card_page(card_url)
                     if card_data:
+                        # Save ALL cards (including below $100)
+                        # Dashboard will filter to show only >= $100 cards
                         self.all_listings.append(card_data)
                         fmv_status = card_data.get('fmv', 'N/A')
                         fmv_source = card_data.get('fmv_source', '')
-                        if fmv_status != 'N/A' and fmv_source == 'alt':
-                            print(f"    ✓ {card_data.get('grader', 'N/A')} {card_data.get('grade', '')} - {card_data.get('current_price', 'N/A')} | FMV: {fmv_status} (ALT)")
+                        
+                        # Check price for display purposes
+                        price_str = card_data.get('current_price', '')
+                        price_val = 0.0
+                        if price_str and price_str != 'Unlisted':
+                            try:
+                                price_clean = re.sub(r'[^\d.]', '', str(price_str))
+                                price_val = float(price_clean) if price_clean else 0.0
+                            except:
+                                pass
+                        
+                        # Show status (but save all cards)
+                        grader_grade = f"{card_data.get('grader', 'N/A')} {card_data.get('grade', '')}".strip()
+                        price_display = card_data.get('current_price', 'N/A')
+                        
+                        if price_val >= 100.0:
+                            if fmv_status != 'N/A' and fmv_source == 'alt':
+                                print(f"    ✓ {grader_grade} - {price_display} | FMV: {fmv_status} (ALT)")
+                            else:
+                                print(f"    ✓ {grader_grade} - {price_display} | FMV: {fmv_status}")
                         else:
-                            print(f"    ✓ {card_data.get('grader', 'N/A')} {card_data.get('grade', '')} - {card_data.get('current_price', 'N/A')} | FMV: {fmv_status}")
+                            # Still save, but show FMV even for cards below $100
+                            if fmv_status != 'N/A' and fmv_source == 'alt':
+                                print(f"    💾 Saved ({grader_grade} - {price_display} | FMV: {fmv_status} (ALT))")
+                            elif fmv_status != 'N/A':
+                                print(f"    💾 Saved ({grader_grade} - {price_display} | FMV: {fmv_status})")
+                            else:
+                                if price_val > 0:
+                                    print(f"    💾 Saved ({grader_grade} - {price_display} | FMV: N/A)")
+                                else:
+                                    print(f"    💾 Saved ({grader_grade} - {price_display})")
                     
                     time.sleep(0.3)
                 
@@ -1376,6 +1427,9 @@ def main():
         print("   URL pattern: https://www.phygitals.com/marketplace?page=N")
     else:
         print(f"\nSCRAPE MODE: Getting {max_pages} pages starting at page {start_from}")
+    
+    print("\n💰 SCRAPING MODE: Scraping ALL cards")
+    print("   All cards will be saved and shown in dashboard")
     
     print("\nStarting in 5 seconds...")
     time.sleep(5)

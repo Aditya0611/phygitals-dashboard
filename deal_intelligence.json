@@ -1,0 +1,15 @@
+{
+  "summary": {
+    "total_cards_analyzed": 0,
+    "total_deals_found": 0,
+    "crazy_deals": 0,
+    "excellent_deals": 0,
+    "tier_counts": {},
+    "last_updated": "",
+    "min_price_filter": "$50.00"
+  },
+  "top_crazy_deals": [],
+  "top_excellent_deals": [],
+  "tiered_deals": {},
+  "all_deals": []
+}

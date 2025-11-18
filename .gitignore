@@ -3,16 +3,31 @@ node_modules/
 venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Build outputs
+# Next.js
 .next/
 out/
+build/
 dist/
 
 # Environment variables
 .env
 .env.local
-.env.production.local
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
 
 # Logs
 *.log
@@ -20,70 +35,42 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
+# Chrome data
+chrome_data_*/
 
-# Coverage directory used by tools like istanbul
-coverage/
+# Progress files (keep only latest in git)
+marketplace_url_progress_page*.json
 
-# nyc test coverage
-.nyc_output
+# Old data files
+pokemon_*.json
+pokemon_*.csv
+pokemon_*.xlsx
+high_value_*.json
+simple_high_value_*.json
+detailed_psa_*.json
+enhanced_psa_*.json
+psa_certificate_*.json
+premium_*.json
+alt_xyz_integration_data.json
+next_data.json
+existing_marketplace_data_*.csv
+existing_marketplace_data_*.xlsx
 
-# Dependency directories
-jspm_packages/
-
-# Optional npm cache directory
-.npm
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
-.env
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Python virtual environment
-venv/
-env/
-ENV/
-
-# Python cache
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Scraped data files (keep only the main ones)
-marketplace_progress_*.json
-all_cards_progress.json
+# Debug files
 debug_*.html
-test_*.py
-*_progress_*.json
+debug_*.py
+temp_*.html
+marketplace_loaded_source.html
 
-# Keep important data files
-!phygitals_marketplace_complete.json
-!filtered_marketplace_data.json
-!enhanced_psa_cards_with_certificates.json
-!dashboard_alt_xyz_data.json
+# Test files
+test_*.py
+
+# Temporary scripts
+check_remaining_unimportant_files.py
+cleanup_unimportant_files.py
+check_fmv_extraction_status.py
+
+# Large data files (if needed, use Git LFS)
+*.xlsx
+*.csv
+

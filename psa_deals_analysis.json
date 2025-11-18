@@ -1,35 +1,10 @@
 {
-  "affordable_deals": [
-    {
-      "name": "2000 POKEMON GYM HEROES 1ST ED #103 NO REMOVAL GYM PSA 8",
-      "price": 12.96,
-      "fmv": 15.98,
-      "savings": 3.0199999999999996,
-      "savings_pct": 18.89862327909887,
-      "cert": "N/A",
-      "url": "https://www.phygitals.com/card/2000-pokemon-gym-heroes-1st-ed-0wivgn",
-      "grade": "8",
-      "pokemon_name": "GYM HEROES 1ST ED #103 NO"
-    }
-  ],
+  "affordable_deals": [],
   "premium_deals": [],
-  "all_psa_deals": [
-    {
-      "name": "2000 POKEMON GYM HEROES 1ST ED #103 NO REMOVAL GYM PSA 8",
-      "price": 12.96,
-      "fmv": 15.98,
-      "savings": 3.0199999999999996,
-      "savings_pct": 18.89862327909887,
-      "cert": "N/A",
-      "url": "https://www.phygitals.com/card/2000-pokemon-gym-heroes-1st-ed-0wivgn",
-      "grade": "8",
-      "pokemon_name": "GYM HEROES 1ST ED #103 NO"
-    }
-  ],
   "summary": {
-    "total_psa_cards": 2,
-    "psa_deals_found": 1,
-    "affordable_count": 1,
+    "total_psa_cards": 0,
+    "psa_deals_found": 0,
+    "affordable_count": 0,
     "premium_count": 0
   }
 }
