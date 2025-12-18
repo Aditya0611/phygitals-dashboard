@@ -60,53 +60,46 @@ class URLMarketplaceScraper:
             pass
         
         chrome_options = Options()
-        chrome_options.add_argument('--headless=new')  # Use new headless mode
+        chrome_options.add_argument('--headless=new')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument('--disable-gpu')
-        chrome_options.add_argument('--enable-unsafe-swiftshader')
-        chrome_options.add_argument('--disable-software-rasterizer')
+        # Simplified options to avoid conflicts/hangs
+        chrome_options.add_argument('--remote-debugging-port=9222')
+        chrome_options.add_argument('--window-size=1920,1080')
         chrome_options.add_argument('--disable-extensions')
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_argument('--disable-features=NetworkService,NetworkServiceInProcess')
-        chrome_options.add_argument('--disable-background-timer-throttling')
-        chrome_options.add_argument('--disable-renderer-backgrounding')
-        chrome_options.add_argument('--blink-settings=imagesEnabled=false')
         chrome_options.add_argument('--disable-notifications')
         chrome_options.add_argument('--disable-popup-blocking')
-        chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-logging", "enable-automation"])
-        chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_experimental_option('prefs', {
-            'profile.managed_default_content_settings.images': 2,
-            'profile.managed_default_content_settings.plugins': 2,
-            'profile.managed_default_content_settings.stylesheets': 2,
-            'profile.managed_default_content_settings.fonts': 2,
-            'profile.managed_default_content_settings.media_stream': 2
-        })
+        chrome_options.add_argument('--log-level=3')
         chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
         
         # Try to create driver with retry
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                chrome_options.set_capability('pageLoadStrategy', 'none')
-                self.driver = webdriver.Chrome(options=chrome_options)
+                print(f"  [Attempt {attempt+1}] Initializing WebDriver with webdriver-manager...")
+                chrome_options.set_capability('pageLoadStrategy', 'eager')
+                
+                # Use webdriver_manager to get the correct driver
+                from webdriver_manager.chrome import ChromeDriverManager
+                from selenium.webdriver.chrome.service import Service
+                
+                driver_path = ChromeDriverManager().install()
+                print(f"  Driver path: {driver_path}")
+                service = Service(driver_path)
+                
+                self.driver = webdriver.Chrome(service=service, options=chrome_options)
+                print("  WebDriver initialized successfully.")
+                
                 self.driver.set_page_load_timeout(45)
-                self.driver.implicitly_wait(0)
+                self.driver.implicitly_wait(2)
                 
                 # Test connection to marketplace homepage
                 print("Testing connection...")
                 try:
-                    self.driver.set_page_load_timeout(20)
+                    self.driver.set_page_load_timeout(30)
                     self.driver.get("https://www.phygitals.com/marketplace")
-                    try:
-                        WebDriverWait(self.driver, 5).until(
-                            lambda d: d.execute_script("return document.body && document.body.children.length > 0")
-                        )
-                    except:
-                        pass
+                    print("  Page loaded, checking title...")
                     title = self.driver.title
                     print(f"✓ Connection successful! Page title: {title[:50]}...")
                 except Exception as conn_err:
@@ -116,6 +109,7 @@ class URLMarketplaceScraper:
                 print("Chrome ready!\n")
                 return
             except Exception as e:
+                print(f"  ❌ Error details: {str(e)}")
                 if attempt < max_retries - 1:
                     print(f"  ⚠️  Chrome init failed (attempt {attempt + 1}/{max_retries}), retrying...")
                     time.sleep(2)
